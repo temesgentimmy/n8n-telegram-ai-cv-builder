@@ -1,29 +1,33 @@
-# 🤖 AI-Powered Telegram Resume & CV Builder (n8n Workflow)
+# 🚀 Telegram AI Resume & PDF Generator (n8n Workflow)
 
-An automated, end-to-end micro-SaaS workflow built in **n8n** that converts user messages or uploaded PDF resumes into professionally formatted, ATS-optimized PDF CVs delivered directly inside Telegram.
-
----
-
-## 🚀 Overview & Architecture
-
-This workflow acts as an intelligent document processing engine. It maintains session state per user, cleans up formatting using an LLM agent, and dynamically generates print-ready A4 PDFs.
-
-### Key Features:
-* **Dual Input Pipeline:** Processes both raw Telegram chat messages and uploaded PDF resume files.
-* **Persistent User Memory:** Uses Google Sheets keyed by Telegram `chat_id` to allow users to incrementally update their CV over time.
-* **AI Formatting Engine:** Utilizes an LLM agent with structured output parsing to fix grammar, rewrite experience into action-oriented bullet points, and normalize skill tags.
-* **Custom CSS Rendering:** Converts structured JSON into a clean two-column HTML layout with skill badges, optimized specifically for A4 page dimensions.
-* **Automated PDF Delivery:** Converts HTML to binary PDF files via API and posts the finished document directly back to the user's Telegram chat.
+An automated, end-to-end workflow built with **n8n**, **OpenAI**, **Telegram Bot API**, and **PDFShift**. This tool converts unstructured text sent via Telegram into structured JSON, parses it into styled HTML/CSS templates, and delivers a print-ready A4 PDF back to the user in seconds.
 
 ---
 
-## 🛠️ Tech Stack & Workflow Nodes
+## 🚧 Project Status & Ongoing Upgrades
 
-* **Automation Platform:** n8n (LangChain Agent, Code Nodes, HTTP Request)
-* **Messaging Interface:** Telegram Bot API
-* **Database & Memory:** Google Sheets API
-* **AI Model:** OpenAI GPT Model + Structured Output Parser
-* **PDF Conversion Engine:** PDFShift API
+> 💡 **Note for Reviewers & Recruiters:** 
+> This workflow is actively being maintained and upgraded to commercial grade. 
+
+* **Template Polish:** Fine-tuning line wrapping, spacing, and dynamic element heights (as seen in recent test builds) to ensure zero visual clipping across all text lengths.
+* **Cover Letter Generator:** Adding an automated AI pipeline step to generate tailored cover letters based on the user's resume data and job description.
+* **Interview Preparation Bot:** Introducing an interactive Telegram feature that generates key interview questions and STAR-method answer prep based on the generated CV.
+* **Multi-Template Selector:** Implementing an inline Telegram keyboard allowing users to choose between **Modern**, **Minimalist**, and **Executive** CV designs.
+
+---
+
+## 🛠️ Tech Stack & Architecture
+
+* **Automation Platform:** n8n (Self-Hosted / Cloud)
+* **Trigger & Delivery:** Telegram Bot API
+* **AI & Data Extraction:** OpenAI API (Structured JSON Parsing)
+* **Templating & Rendering:** HTML5, CSS Grid & Flexbox, JavaScript
+* **PDF Conversion:** PDFShift API
+
+---
+
+## ⚙️ How It Works
+
 
 ---
 
@@ -35,9 +39,5 @@ This workflow acts as an intelligent document processing engine. It maintains se
    * **Telegram API:** Enter your Telegram Bot Token.
    * **Google Sheets API:** Connect your OAuth2 account.
    * **PDFShift API:** Add your API Key under HTTP Header / Basic Auth.
+4. Activate the workflow and test by sending text to your Telegram Bot!
 
----
-
-## 📊 Visual Demo & Output
-
-*(Upload your screenshots here: n8n workflow canvas screenshot, Telegram bot interaction, and sample generated PDF).*
