@@ -1,0 +1,856 @@
+{
+  "name": "Telegram CV Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "id": "77a60816-74da-42ba-84ef-ee0677cbb8a4",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -336,
+        368
+      ],
+      "webhookId": "4a5470f7-37c2-402b-8eb4-599554aece5e",
+      "credentials": {
+        "telegramApi": {
+          "id": "0SQ7TEdL6Fdn1ELl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "r-menu",
+                    "leftValue": "=={{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "menu"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "r-create",
+                    "leftValue": "=={{ $json.callback_query.data }}",
+                    "rightValue": "create_new",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "create"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "r-file",
+                    "leftValue": "={{ $json.message.document.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "file"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "text"
+        }
+      },
+      "id": "a0000000-0000-4000-8000-000000000001",
+      "name": "Route Update",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Welcome to the CV Bot! What would you like to do?",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📝 Create a new CV",
+                    "additionalFields": {
+                      "callback_data": "create_new"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📄 Upload existing CV",
+                    "additionalFields": {
+                      "callback_data": "upload_existing"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a0000000-0000-4000-8000-000000000002",
+      "name": "Send Menu",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        128
+      ],
+      "webhookId": "b1111111-0000-4000-8000-000000000002",
+      "credentials": {
+        "telegramApi": {
+          "id": "0SQ7TEdL6Fdn1ELl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "Great! Send me your details in one message (name, job title, contact, skills, experience, education) and I'll build your CV from scratch. Tip: start the message with /new to force a fresh CV.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a0000000-0000-4000-8000-000000000003",
+      "name": "Prompt Create",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        224
+      ],
+      "webhookId": "b1111111-0000-4000-8000-000000000003",
+      "credentials": {
+        "telegramApi": {
+          "id": "0SQ7TEdL6Fdn1ELl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "id": "a0000000-0000-4000-8000-000000000005",
+      "name": "Get CV File",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        368
+      ],
+      "webhookId": "b1111111-0000-4000-8000-000000000005",
+      "credentials": {
+        "telegramApi": {
+          "id": "0SQ7TEdL6Fdn1ELl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {
+          "joinPages": true
+        }
+      },
+      "id": "a0000000-0000-4000-8000-000000000006",
+      "name": "Extract PDF Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Normalize an uploaded PDF CV into the shared agent input shape.\nconst t = $('Telegram Trigger').item.json;\nconst text = $input.item.json.text || '';\nreturn {\n  json: {\n    message_text: text,\n    existing_cv: {}\n  }\n};\n"
+      },
+      "id": "a0000000-0000-4000-8000-000000000007",
+      "name": "Prep File Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "new-cmd",
+              "leftValue": "={{ ($json.message.text || '').trim() }}",
+              "rightValue": "/new",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b1a11111-1111-4111-8111-111111111111",
+      "name": "Is New CV Command",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        128,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Brand-new CV: build purely from the user's message, no existing data.\nconst t = $('Telegram Trigger').item.json;\nreturn {\n  json: {\n    message_text: (t.message && t.message.text) || '',\n    existing_cv: {}\n  }\n};\n"
+      },
+      "id": "c2a22222-2222-4222-8222-222222222222",
+      "name": "Prep New Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/16bAI9XiasRlZqoAJ9oGWkhxckhVD0x16VaK5fK_R-zM/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "chat_id",
+              "lookupValue": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8f92bbb9-4bad-4167-80d1-f7995be8e154",
+      "name": "Read Existing CV",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        704
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ffY0PhTUsn8pAkCP",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Update path: merge the new message into the user's existing stored CV.\nconst t = $('Telegram Trigger').item.json;\nconst existing = $input.item.json || {};\nreturn {\n  json: {\n    message_text: (t.message && t.message.text) || '',\n    existing_cv: existing\n  }\n};\n"
+      },
+      "id": "d3a33333-3333-4333-8333-333333333333",
+      "name": "Prep Update Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User input (a free-text message OR the text extracted from an uploaded CV file):\n\"{{ $json.message_text }}\"\n\nExisting CV data for this user (an empty object {} means build a brand-new CV from the input above):\n{{ JSON.stringify($json.existing_cv) }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an expert executive resume writer and ATS (Applicant Tracking System) optimization coach.\n\nCRITICAL INSTRUCTIONS:\n1. MERGE & UPDATE: If existing CV data is provided, merge the new user input into the existing CV data. If existing CV data is empty ({}), create a brand-new CV from the input.\n2. FULL NAME: Capitalize and format properly (e.g., \"John Doe\"). Never split names awkwardly across fields.\n3. JOB TITLE: Normalize to a clear, professional title (e.g., \"Digital Marketing Specialist\").\n4. SKILLS: Clean up and normalize skill names. Remove duplicates and extra characters like colons/semicolons. Return strictly as a clean, comma-separated list (e.g., \"Meta Ads, Google Ads, HubSpot, CRM Management\").\n5. SUMMARY: Write or rewrite into a concise, powerful 2-3 sentence executive summary using active voice.\n6. WORK EXPERIENCE:\n   - Fix all grammar, spelling, and punctuation.\n   - Transform weak job descriptions into impactful ATS bullet points using strong action verbs (e.g., \"Led\", \"Executed\", \"Optimized\", \"Generated\").\n   - Format each role cleanly with action-oriented bullet points.\n\nProduce the COMPLETE, up-to-date, highly polished CV as structured fields."
+        }
+      },
+      "id": "02ba30a8-1ab0-4876-89fc-e07be9e2992c",
+      "name": "Extract CV Fields",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "2b8981ad-b8ec-428a-abf0-9862f6713b3f",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        784,
+        752
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "n8n credits",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"full_name\":\"Jane Doe\",\"job_title\":\"Senior Software Engineer\",\"email\":\"jane@example.com\",\"phone\":\"+1 555 123 4567\",\"location\":\"Berlin, Germany\",\"summary\":\"Experienced engineer with 8 years building web platforms.\",\"skills\":\"JavaScript, TypeScript, Node.js, React, AWS\",\"experience\":\"Senior Engineer at Acme (2020-present): led platform team. Engineer at Beta (2016-2020): built APIs.\",\"education\":\"BSc Computer Science, TU Berlin, 2016\"}"
+      },
+      "id": "c5df9dcf-fe85-4ab6-a337-5d409e6e384f",
+      "name": "CV Fields Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Pull the structured CV from the AI agent output and identity from the trigger\nconst cv = $input.item.json.output || {};\nconst trigger = $('Telegram Trigger').item.json;\nconst msg = trigger.message || {};\n\n// Escape HTML-sensitive characters so CV text can never break the layout\nconst esc = (s) => (s == null ? '' : String(s)\n  .replace(/&/g, '&amp;')\n  .replace(/</g, '&lt;')\n  .replace(/>/g, '&gt;'));\n\nconst item = {\n  chat_id: (msg.chat && msg.chat.id) || '',\n  telegram_username: (msg.from && msg.from.username) || '',\n  full_name: cv.full_name || '',\n  job_title: cv.job_title || '',\n  email: cv.email || '',\n  phone: cv.phone || '',\n  location: cv.location || '',\n  summary: cv.summary || '',\n  skills: cv.skills || '',\n  experience: cv.experience || '',\n  education: cv.education || '',\n};\n\n// 1. Clean & Format Name (Prevents awkward line breaks)\nconst formattedName = esc(item.full_name || 'Your Name').toUpperCase();\n\n// 2. Smart Skill Parsing (Handles commas, semicolons, and colons)\nlet skillsArray = [];\nif (item.skills) {\n  skillsArray = item.skills\n    .split(/[,;:]+/) // Splits by comma, semicolon, or colon\n    .map(s => s.trim())\n    .filter(s => s.length > 0 && !s.toLowerCase().includes('skills'));\n}\n\nconst skillsHTML = skillsArray.length > 0\n  ? skillsArray.map(skill => `<span class=\"skill-tag\">${esc(skill)}</span>`).join('')\n  : (item.skills ? `<span class=\"skill-tag\">${esc(item.skills)}</span>` : '');\n\n// 3. Build HTML Document\nconst htmlContent = `\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <style>\n    /* Print Sizing - Prevents Right Margin Cut-Off */\n    @page {\n      size: A4 portrait;\n      margin: 0;\n    }\n    * {\n      box-sizing: border-box;\n      margin: 0;\n      padding: 0;\n    }\n    body {\n      font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Arial, sans-serif;\n      color: #334155;\n      background-color: #ffffff;\n      line-height: 1.5;\n      font-size: 12px;\n      width: 100%;\n      -webkit-print-color-adjust: exact;\n    }\n\n    /* Container Grid */\n    .cv-container {\n      display: grid;\n      grid-template-columns: 210px 1fr;\n      min-height: 297mm; /* Standard A4 Height */\n      width: 210mm;\n      box-sizing: border-box;\n    }\n\n    /* Left Sidebar */\n    .sidebar {\n      background-color: #f8fafc;\n      padding: 30px 20px;\n      border-right: 1px solid #e2e8f0;\n      display: flex;\n      flex-direction: column;\n      gap: 20px;\n    }\n\n    .name-box {\n      border-bottom: 2.5px solid #2563eb;\n      padding-bottom: 12px;\n    }\n\n    .name {\n      font-size: 18px;\n      font-weight: 800;\n      color: #0f172a;\n      line-height: 1.3;\n      word-wrap: break-word;\n      letter-spacing: 0.5px;\n    }\n\n    .job-title {\n      font-size: 11px;\n      font-weight: 700;\n      color: #2563eb;\n      text-transform: uppercase;\n      margin-top: 6px;\n      letter-spacing: 0.5px;\n    }\n\n    .sidebar-heading {\n      font-size: 10px;\n      font-weight: 700;\n      text-transform: uppercase;\n      letter-spacing: 1px;\n      color: #0f172a;\n      margin-bottom: 8px;\n      border-bottom: 1px solid #cbd5e1;\n      padding-bottom: 3px;\n    }\n\n    .contact-block {\n      margin-bottom: 8px;\n      word-break: break-all;\n    }\n\n    .contact-label {\n      font-size: 9px;\n      font-weight: 700;\n      color: #64748b;\n      text-transform: uppercase;\n    }\n\n    .contact-value {\n      font-size: 11px;\n      color: #334155;\n    }\n\n    /* Skill Badges */\n    .skills-flex {\n      display: flex;\n      flex-wrap: wrap;\n      gap: 5px;\n    }\n\n    .skill-tag {\n      background-color: #eff6ff;\n      color: #1d4ed8;\n      border: 1px solid #bfdbfe;\n      font-size: 10px;\n      font-weight: 600;\n      padding: 3px 7px;\n      border-radius: 4px;\n      display: inline-block;\n    }\n\n    /* Right Main Content */\n    .main-content {\n      padding: 30px 28px;\n      display: flex;\n      flex-direction: column;\n      gap: 22px;\n      overflow: hidden; /* Prevents overflow clipping */\n    }\n\n    .section-title {\n      font-size: 12px;\n      font-weight: 700;\n      text-transform: uppercase;\n      letter-spacing: 1px;\n      color: #0f172a;\n      border-bottom: 2px solid #0f172a;\n      padding-bottom: 4px;\n      margin-bottom: 10px;\n    }\n\n    .text-block {\n      font-size: 11.5px;\n      color: #334155;\n      line-height: 1.6;\n      white-space: pre-line;\n      word-wrap: break-word;\n    }\n  </style>\n</head>\n<body>\n\n  <div class=\"cv-container\">\n    <!-- Sidebar -->\n    <aside class=\"sidebar\">\n      <div class=\"name-box\">\n        <h1 class=\"name\">${formattedName}</h1>\n        <div class=\"job-title\">${esc(item.job_title)}</div>\n      </div>\n\n      <!-- Contact -->\n      <div>\n        <div class=\"sidebar-heading\">Contact</div>\n        ${item.email ? `<div class=\"contact-block\"><div class=\"contact-label\">Email</div><div class=\"contact-value\">${esc(item.email)}</div></div>` : ''}\n        ${item.phone ? `<div class=\"contact-block\"><div class=\"contact-label\">Phone</div><div class=\"contact-value\">${esc(item.phone)}</div></div>` : ''}\n        ${item.location ? `<div class=\"contact-block\"><div class=\"contact-label\">Location</div><div class=\"contact-value\">${esc(item.location)}</div></div>` : ''}\n        ${item.telegram_username ? `<div class=\"contact-block\"><div class=\"contact-label\">Telegram</div><div class=\"contact-value\">@${esc(item.telegram_username.replace('@', ''))}</div></div>` : ''}\n      </div>\n\n      <!-- Skills -->\n      ${skillsHTML ? `\n      <div>\n        <div class=\"sidebar-heading\">Skills</div>\n        <div class=\"skills-flex\">${skillsHTML}</div>\n      </div>` : ''}\n\n      <!-- Education -->\n      ${item.education ? `\n      <div>\n        <div class=\"sidebar-heading\">Education</div>\n        <div class=\"text-block\" style=\"font-size: 11px;\">${esc(item.education)}</div>\n      </div>` : ''}\n    </aside>\n\n    <!-- Main Content -->\n    <main class=\"main-content\">\n      ${item.summary ? `\n      <section>\n        <h2 class=\"section-title\">Professional Summary</h2>\n        <p class=\"text-block\">${esc(item.summary)}</p>\n      </section>` : ''}\n\n      ${item.experience ? `\n      <section>\n        <h2 class=\"section-title\">Work Experience</h2>\n        <div class=\"text-block\">${esc(item.experience)}</div>\n      </section>` : ''}\n    </main>\n  </div>\n\n</body>\n</html>\n`;\n\nreturn {\n  json: {\n    ...item,\n    html: htmlContent\n  }\n};\n"
+      },
+      "id": "0a6123c6-da90-41dc-b61c-6bd2e8256d5f",
+      "name": "Build CV HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/16bAI9XiasRlZqoAJ9oGWkhxckhVD0x16VaK5fK_R-zM/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "chat_id"
+          ],
+          "value": {
+            "chat_id": "={{ $json.chat_id }}",
+            "telegram_username": "={{ $json.telegram_username }}",
+            "full_name": "={{ $json.full_name }}",
+            "job_title": "={{ $json.job_title }}",
+            "email": "={{ $json.email }}",
+            "phone": "={{ $json.phone }}",
+            "location": "={{ $json.location }}",
+            "summary": "={{ $json.summary }}",
+            "skills": "={{ $json.skills }}",
+            "experience": "={{ $json.experience }}",
+            "education": "={{ $json.education }}"
+          },
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "telegram_username",
+              "displayName": "telegram_username",
+              "type": "string",
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "full_name",
+              "displayName": "full_name",
+              "type": "string",
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "type": "string",
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "type": "string",
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "type": "string",
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "type": "string",
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "type": "string",
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "skills",
+              "displayName": "skills",
+              "type": "string",
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "experience",
+              "displayName": "experience",
+              "type": "string",
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "education",
+              "displayName": "education",
+              "type": "string",
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "id": "83d8153a-ac69-4bb1-8dd6-966e465d03ab",
+      "name": "Save CV Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1408,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ffY0PhTUsn8pAkCP",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pdfshift.io/v3/convert/pdf",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "source",
+              "value": "={{ $json.html }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "95cac1cb-96e3-4f05-9907-43f7edb131a3",
+      "name": "HTML to PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1408,
+        608
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "tPDTKI5VePp5AHgi",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "=Here is your CV, {{ $('Build CV HTML').item.json.full_name || 'there' }}! Send me more details anytime to update it, or /new to start a fresh one.",
+          "fileName": "={{ ($('Build CV HTML').item.json.full_name || 'CV').replace(/\\s+/g,'_') }}.pdf"
+        }
+      },
+      "id": "d5afba2a-6626-44f7-a0b7-2f823068c2b9",
+      "name": "Send CV PDF",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1632,
+        608
+      ],
+      "webhookId": "e3823da9-6003-47c0-b271-7bbda8207739",
+      "credentials": {
+        "telegramApi": {
+          "id": "0SQ7TEdL6Fdn1ELl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "=={{ $json.callback_query.id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        224
+      ],
+      "id": "2ad5d58c-2804-448c-946a-8e326180ed00",
+      "name": "Answer Query a callback",
+      "webhookId": "26d27a54-f4f4-497e-990e-ec4b4e63ef9a",
+      "credentials": {
+        "telegramApi": {
+          "id": "0SQ7TEdL6Fdn1ELl",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Route Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Update": {
+      "main": [
+        [
+          {
+            "node": "Send Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Answer Query a callback",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get CV File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is New CV Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get CV File": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF Text": {
+      "main": [
+        [
+          {
+            "node": "Prep File Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep File Input": {
+      "main": [
+        [
+          {
+            "node": "Extract CV Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is New CV Command": {
+      "main": [
+        [
+          {
+            "node": "Prep New Input",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read Existing CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep New Input": {
+      "main": [
+        [
+          {
+            "node": "Extract CV Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Existing CV": {
+      "main": [
+        [
+          {
+            "node": "Prep Update Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Update Input": {
+      "main": [
+        [
+          {
+            "node": "Extract CV Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract CV Fields": {
+      "main": [
+        [
+          {
+            "node": "Build CV HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Extract CV Fields",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CV Fields Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Extract CV Fields",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build CV HTML": {
+      "main": [
+        [
+          {
+            "node": "Save CV Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTML to PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML to PDF": {
+      "main": [
+        [
+          {
+            "node": "Send CV PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer Query a callback": {
+      "main": [
+        [
+          {
+            "node": "Prompt Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Y3sWsTEYUZYhGkzk",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "75fcaa3a-ac72-4f24-801f-759e0eefa9ea",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6e5377bcbad1d20d00f3b33f380d7957e103b88849e1be4042416880582907fd"
+  },
+  "nodeGroups": [],
+  "id": "KJ0a9bdtVqOueKaq",
+  "tags": []
+}
