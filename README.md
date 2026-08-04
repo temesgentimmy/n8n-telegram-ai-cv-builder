@@ -4,9 +4,9 @@ An automated, end-to-end workflow built with **n8n**, **OpenAI**, **Telegram Bot
 
 ---
 
-## 🚧 Project Status & Ongoing Upgrades
+##  Project Status & Ongoing Upgrades
 
-> 💡 **Note for Reviewers & Recruiters:** 
+>  **Note for Reviewers & Recruiters:** 
 > This workflow is actively being maintained and upgraded to commercial grade. 
 
 * **Template Polish:** Fine-tuning line wrapping, spacing, and dynamic element heights (as seen in recent test builds) to ensure zero visual clipping across all text lengths.
@@ -28,9 +28,9 @@ An automated, end-to-end workflow built with **n8n**, **OpenAI**, **Telegram Bot
 
 ## ⚙️ How It Works
 
+User sends CV or details on Telegram → n8n receives the request → AI extracts and structures the information → HTML CV is generated → PDF is created → PDF is sent back to the user
 
 ---
-
 ## 📥 How to Import & Use
 
 1. Download the `Telegram CV Bot.json` file from this repository.
